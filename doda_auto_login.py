@@ -123,5 +123,49 @@ driver.execute_script("arguments[0].click();", top_company_element)
 # )
 print("一番上の会社名をクリックしました。")
 
-# ブラウザを閉じずに待機
+# 省略: ここまでのコードは既に書かれていると想定
+
+# -----------------------------
+# 一番上の会社名をクリックする部分 (既に書かれている箇所)
+# -----------------------------
+top_company_xpath = '(//div[@id="search-result-list"]//span[@class="company-name"])[1]'
+top_company_element = WebDriverWait(driver, 30).until(
+    EC.element_to_be_clickable((By.XPATH, top_company_xpath))
+)
+driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", top_company_element)
+time.sleep(1)
+driver.execute_script("arguments[0].click();", top_company_element)
+print("一番上の会社名をクリックしました。")
+
+# ▼▼▼ ここから「スカウトを作成」ボタンをクリックする例 ▼▼▼
+
+# もし「候補者詳細」ページなどに遷移してからボタンが表示されるなら、その要素が出現するまで待つ
+#   例: <h1>に「候補者詳細」など特有の文字があれば待機する
+# WebDriverWait(driver, 30).until(
+#     EC.presence_of_element_located((By.XPATH, '//h1[contains(text(), "候補者詳細")]'))
+# )
+
+# 「スカウトを作成」ボタンのXPathを指定 (aタグ or buttonタグなど実際のHTML構造に合わせる)
+scout_button_xpath = '//button[contains(normalize-space(text()), "スカウトを作成")] | //a[contains(normalize-space(text()), "スカウトを作成")]'
+
+scout_button = WebDriverWait(driver, 30).until(
+    EC.element_to_be_clickable((By.XPATH, scout_button_xpath))
+)
+
+# 念のため画面中央へスクロールし、JSでクリック
+driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", scout_button)
+time.sleep(1)
+driver.execute_script("arguments[0].click();", scout_button)
+
+print("『スカウトを作成』ボタンをクリックしました。")
+
+# クリック後に次のページやモーダルが開くのであれば、適宜待機
+# 例: モーダルや次画面のタイトルなどを待機
+# WebDriverWait(driver, 30).until(
+#     EC.presence_of_element_located((By.XPATH, '//h1[contains(text(), "スカウト作成画面")]'))
+# )
+
+# -----------------------------
+# 最後、処理を確認するため一時停止
+# -----------------------------
 input("ブラウザを閉じずに表示を続けます。終了するには何かキーを押してください...")
