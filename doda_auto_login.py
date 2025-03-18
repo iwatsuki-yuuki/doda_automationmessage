@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.action_chains import ActionChains
 import time
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
@@ -63,18 +64,38 @@ driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", headhun
 time.sleep(1)
 driver.execute_script("arguments[0].click();", headhunter_li_element)
 
-# クリック後の画面遷移待ち（例：候補者検索ページへのリンクが表示されるまで）
+# クリック後の画面遷移待ち（候補者検索リンクが表示されるまで）
 candidate_search_header_xpath = '//nav[@id="g-nav"]//a[@href="/member_search/"]'
-WebDriverWait(driver, 30).until(
-    EC.presence_of_element_located((By.XPATH, candidate_search_header_xpath))
+candidate_search_header = WebDriverWait(driver, 30).until(
+    EC.visibility_of_element_located((By.XPATH, candidate_search_header_xpath))
 )
 
 print("中野 智貴 を選択し、次のページへ遷移しました。")
 
+# -------------------------------------------------
+# ▼【重要】「候補者検索」にマウスをホバーし、サブメニュー「検索条件リスト」をクリック
+# -------------------------------------------------
+
+# 1) ActionChainsで「候補者検索」にマウスをホバー
+ActionChains(driver).move_to_element(candidate_search_header).perform()
+time.sleep(1)  # サブメニューが表示されるのを待つ
+
+# 2) 「検索条件リスト」のリンク要素をXPathで特定
+search_condition_list_xpath = '//li[@class="g-nav-sub-item"]/a[@href="/search_list/"]'
+search_condition_list_link = WebDriverWait(driver, 30).until(
+    EC.element_to_be_clickable((By.XPATH, search_condition_list_xpath))
+)
+
+# 3) クリック
+search_condition_list_link.click()
+
+# 4) 画面遷移を待機（検索条件リスト特有の要素を待つ）
+WebDriverWait(driver, 30).until(
+    EC.presence_of_element_located((By.XPATH, '//h1[contains(text(), "検索条件リスト")]'))
+)
+
+print("検索条件リスト画面に遷移しました。")
+
 # ▼ここで待機させる (好きな方法を選択)
-
-# 方法1: キー入力待ちで停止する
 input("ブラウザを閉じずに表示を続けます。終了するには何かキーを押してください...")
-
-# 方法2: 長時間スリープで停止する (例: 1000秒待機)
 # time.sleep(1000)
