@@ -102,5 +102,26 @@ WebDriverWait(driver, 30).until(
 )
 print("「表示」ボタンをクリックし、候補者一覧ページに遷移しました。")
 
+# 1) 「検索結果リスト」の一番上にある会社名をXPathで特定
+#    ※下記は「検索結果リスト(id=search-result-list)の中の span.company-name の先頭要素」を想定。
+top_company_xpath = '(//div[@id="search-result-list"]//span[@class="company-name"])[1]'
+
+# 2) 要素がクリック可能になるまで待機
+top_company_element = WebDriverWait(driver, 30).until(
+    EC.element_to_be_clickable((By.XPATH, top_company_xpath))
+)
+
+# 3) 念のため画面中央へスクロールし、JSでクリック
+driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", top_company_element)
+time.sleep(1)
+driver.execute_script("arguments[0].click();", top_company_element)
+
+# 4) クリック後の画面遷移やポップアップ表示などがある場合は、適宜待機する
+# 例: 次ページに固有の要素があれば、下記のように待機
+# WebDriverWait(driver, 30).until(
+#     EC.presence_of_element_located((By.XPATH, '//h1[contains(text(), "詳細ページ")]'))
+# )
+print("一番上の会社名をクリックしました。")
+
 # ブラウザを閉じずに待機
 input("ブラウザを閉じずに表示を続けます。終了するには何かキーを押してください...")
