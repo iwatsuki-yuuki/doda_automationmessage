@@ -37,35 +37,10 @@ login_button = WebDriverWait(driver, 30).until(
 )
 login_button.click()
 
-# ヘッドハンター選択画面が表示されるまで待機
-headhunter_screen_xpath = '//h1[contains(text(), "ヘッドハンター選択")]'
-WebDriverWait(driver, 30).until(
-    EC.presence_of_element_located((By.XPATH, headhunter_screen_xpath))
-)
-
-# 「中野 智貴」をクリック
-headhunter_xpath = (
-    '//ul[@class="account-list"]/li['
-    '  p[@class="strong-txt"]/span['
-    '    contains(normalize-space(text()), "中野") '
-    '    and '
-    '    contains(normalize-space(text()), "智貴")'
-    '  ]'
-    ']'
-)
-headhunter_li_element = WebDriverWait(driver, 30).until(
-    EC.element_to_be_clickable((By.XPATH, headhunter_xpath))
-)
-driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", headhunter_li_element)
-time.sleep(1)
-driver.execute_script("arguments[0].click();", headhunter_li_element)
-
-# 候補者検索リンクが表示されるまで待機
 candidate_search_header_xpath = '//nav[@id="g-nav"]//a[@href="/member_search/"]'
 candidate_search_header = WebDriverWait(driver, 30).until(
     EC.visibility_of_element_located((By.XPATH, candidate_search_header_xpath))
 )
-print("中野 智貴 を選択し、次のページへ遷移しました。")
 
 # 「候補者検索」にマウスをホバーしてサブメニュー「検索条件リスト」をクリック
 ActionChains(driver).move_to_element(candidate_search_header).perform()
